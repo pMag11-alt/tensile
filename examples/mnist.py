@@ -1,6 +1,6 @@
 """Train an MLP or a small CNN on MNIST.
 
-    python examples/mnist.py --model cnn --epochs 3
+python examples/mnist.py --model cnn --epochs 3
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 """A character-level GPT trained on Shakespeare, in pure NumPy via tensile.
 
-    python examples/char_gpt.py --steps 3000          # train (~5 min on a laptop CPU)
-    python examples/char_gpt.py --sample --tokens 500  # generate from the checkpoint
+python examples/char_gpt.py --steps 3000          # train (~5 min on a laptop CPU)
+python examples/char_gpt.py --sample --tokens 500  # generate from the checkpoint
 """
 
 from __future__ import annotations
@@ -29,7 +29,9 @@ class GPT(nn.Module):
         self.tok = nn.Embedding(vocab, dim)
         self.pos = nn.Embedding(block, dim)
         self.drop = nn.Dropout(dropout)
-        self.blocks = nn.ModuleList(nn.TransformerBlock(dim, heads, causal=True, dropout=dropout) for _ in range(layers))
+        self.blocks = nn.ModuleList(
+            nn.TransformerBlock(dim, heads, causal=True, dropout=dropout) for _ in range(layers)
+        )
         self.ln = nn.LayerNorm(dim)
         self.head = nn.Linear(dim, vocab, bias=False)
         for name, p in self.named_parameters():  # GPT-2 style init

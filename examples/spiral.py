@@ -1,6 +1,6 @@
 """Fit a 3-class spiral with a small MLP and plot the decision boundary.
 
-    python examples/spiral.py --out docs/spiral.png
+python examples/spiral.py --out docs/spiral.png
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 """Plot the loss curve written by `char_gpt.py --log`.
 
-    python examples/plot_loss.py docs/char_gpt_loss.json docs/char_gpt_loss.png
+python examples/plot_loss.py docs/char_gpt_loss.json docs/char_gpt_loss.png
 """
 
 from __future__ import annotations
