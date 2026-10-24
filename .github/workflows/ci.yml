@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install
+        run: pip install -e '.[dev]'
+      - name: Lint
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Tests
+        run: pytest -q
+
+  torch-parity:
+    name: PyTorch parity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install (CPU-only torch)
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e '.[dev]'
+      - name: Forward/backward/optimiser parity with torch
+        run: pytest -q tests/test_torch_parity.py -rs
+
+  examples:
+    name: Examples (MNIST, spiral)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -e '.[plots]'
+      - name: Spiral
+        run: python examples/spiral.py --epochs 100 --out spiral.png
+      - name: MNIST MLP, one epoch, must reach 95%
+        run: python examples/mnist.py --model mlp --epochs 1 --min-acc 0.95
+      - name: Char-GPT, a few steps
+        run: python examples/char_gpt.py --steps 20 --layers 1 --tokens 50
